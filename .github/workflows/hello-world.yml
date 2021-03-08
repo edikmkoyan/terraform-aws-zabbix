@@ -1,0 +1,11 @@
+name: Hello World
+on:
+    push:
+        branches: [ gitactions ]
+    workflow_dispatch:
+jobs:
+    printmessage:
+        runs-on: ubuntu-latest
+        steps:
+        - name: print hello world message
+          run: echo Hello, world!
