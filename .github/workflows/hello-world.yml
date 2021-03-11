@@ -14,7 +14,7 @@ jobs:
           run: echo Hello, world!
         - name: print current working directory
           run: pwd
-        - name: list content of cwd
-          run: ls -l
-        - name: list parent dirs
-          run: ls -l ../; ls -l ../../
+        - name: cd to packer
+          run: cd packer
+        - name: list cwd and parent
+          run: pwd; ls -l; ls -l ../
