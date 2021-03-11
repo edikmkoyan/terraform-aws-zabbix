@@ -7,7 +7,9 @@ jobs:
     printmessage:
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@packertemplate
+        - uses: actions/checkout@v2
+          with:
+            ref: packertemplate
         - name: print hello world message
           run: echo Hello, world!
         - name: print current working directory
