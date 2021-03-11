@@ -1,0 +1,20 @@
+name: Hello World
+on:
+    push:
+        branches: [ gitactions ]
+    workflow_dispatch:
+jobs:
+    printmessage:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+          with:
+            ref: packertemplate
+        - name: print hello world message
+          run: echo Hello, world!
+        - name: print current working directory
+          run: pwd
+        - name: cd to packer
+          run: cd packer
+        - name: list cwd and parent
+          run: pwd; ls -l; ls -l ../
