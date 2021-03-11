@@ -9,3 +9,7 @@ jobs:
         steps:
         - name: print hello world message
           run: echo Hello, world!
+        - name: print current working directory
+          run: pwd
+        - name: list content of cwd
+          run: ls -l
