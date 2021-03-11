@@ -13,3 +13,5 @@ jobs:
           run: pwd
         - name: list content of cwd
           run: ls -l
+        - name: list parent dirs
+          run: ls -l ../; ls -l ../../
