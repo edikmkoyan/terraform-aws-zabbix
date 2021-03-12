@@ -11,7 +11,7 @@ jobs:
           with:
             ref: packertemplate
         - name: print hello world message
-          run: echo Hello, world!
+          run: echo Hello, world!!!
         - name: print current working directory
           run: pwd
         - name: cd to packer
