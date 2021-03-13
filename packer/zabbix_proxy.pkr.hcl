@@ -1,7 +1,13 @@
+locals {
+  playbook  = "${path.cwd}/var.zabbix_playbook"
+#  scripts_folder = "${path.root}/scripts"
+#  root           = path.root
+}
+
 source "amazon-ebs" "basic-example" {
-  region        = "eu-central-1"
-#  source_ami    = "ami-009b16df9fcaac611"
-  instance_type = "t2.micro"
+  region        = ${var.region} 
+#  source_ami    =var.src_image["ubuntu_frankfurt"] 
+  instance_type = var.instance_types["small"] 
   ssh_username  = "ubuntu"
   ami_name      = "packer_test_zabbix_agent_{{timestamp}}"
   communicator  = "ssh"
@@ -23,7 +29,7 @@ build {
   ]
 
   provisioner "ansible" {
-    playbook_file = "zabbix_proxy_playbook.yml"
+    playbook_file = local.playbook
   }
 }
 
