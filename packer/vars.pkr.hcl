@@ -4,7 +4,7 @@ variable "region" {
 }
 
 variable "src_image" {
-  type = map
+#  type = map
   default = {
      "ubuntu_frankfurt" = "ami-0767046d1677be5a0"
      "ubuntu_oregon" = "ami-0ca5c3bd5a268e7db"
@@ -14,7 +14,7 @@ variable "src_image" {
 }
 
 variable "instance_types" {
-  type = map
+#  type = map
   default =  {
        "small" = "t2.micro"
        "medium" = "t2.medium"
