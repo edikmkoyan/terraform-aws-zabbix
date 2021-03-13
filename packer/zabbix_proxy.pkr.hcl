@@ -1,7 +1,7 @@
 locals {
   playbook  = "${path.cwd}/var.zabbix_playbook"
-  scripts_folder = "${path.root}/scripts"
-  root           = path.root
+#  scripts_folder = "${path.root}/scripts"
+#  root           = path.root
 }
 
 source "amazon-ebs" "basic-example" {
