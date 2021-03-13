@@ -48,7 +48,7 @@ jobs:
         with:
           command: validate
           arguments: -syntax-only
-          target: packer/test.pkr.hcl
+          target: packer
 
       # build artifact
       - name: Build Artifact
@@ -56,6 +56,6 @@ jobs:
         with:
           command: build
           arguments: "-color=false -on-error=abort"
-          target: packer/test.pkr.hcl
+          target: packer
         env:
           PACKER_LOG: 1
