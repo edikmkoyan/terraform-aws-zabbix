@@ -7,6 +7,7 @@ locals {
 source "amazon-ebs" "basic-example" {
   region        = var.region
 #  source_ami    =var.src_image["ubuntu_frankfurt"] 
+#  source_ami    =var.src_image["ubuntu_frankfurt"] 
   instance_type = var.instance_types["small"]
   ssh_username  = "ubuntu"
   ami_name      = "packer_test_zabbix_agent_{{timestamp}}"
