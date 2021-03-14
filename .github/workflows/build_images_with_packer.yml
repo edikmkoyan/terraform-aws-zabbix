@@ -36,11 +36,12 @@ jobs:
           target: packer
 
       # fix backwards incompatibilities in template
-      - name: Fix Template
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: fix
-          target: packer/*.pcr.hcl
+      #- name: Fix Template
+      #  uses: hashicorp/packer-github-actions@master
+      #  with:
+      #    command: fix
+      #    target: packer/*.pcr.hcl
+      # NOTE: not supported for hcl files
 
       # validate templates
       - name: Validate Template
