@@ -11,6 +11,11 @@ provider "aws" {
   region  = var.region
 }
 
+resource "aws_key_pair" "zabbix_key"{
+  key_name = "zabbix"
+  public_key = file(var.key_path)
+}
+
 resource "aws_subnet" "main_subnet" {
     vpc_id = aws_vpc.main.id
     cidr_block = var.main_subnet
@@ -38,30 +43,24 @@ resource "aws_security_group" "server_sg" {
   name = "security_group_zabbix_server"
   description = "Security group for zabbix server"
   vpc_id = aws_vpc.main.id
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic ingress {
+    for_each = var.zabbix_server_ingress_rules
+    content {
+      description = ingress.value.description
+      from_port = ingress.value.port
+      to_port = ingress.value.port
+      protocol = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_block 
+    }
   }
-  ingress {
-    from_port = var.server_port
-    to_port   = var.server_port
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-     description = "allow SSH"
-     from_port  = "22"
-     to_port    = "22"
-     protocol   = "tcp"
-     cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic egress {
+    for_each = var.zabbix_server_engress_rules
+    content {
+      from_port = egress.value.port
+      to_port = egress.value.port
+      protocol = egress.value.protocol
+      cidr_blocks = egress.value.cidr_block 
+    }
   }
 }
 
@@ -84,7 +83,7 @@ resource "aws_instance" "server_instance" {
     instance_type     = var.instance_types["server"]
     ami               = var.instance_amis["server"]
     vpc_security_group_ids = [aws_security_group.server_sg.id]
-    key_name = var.key
+    key_name = aws_key_pair.zabbix_key.id
     subnet_id = aws_subnet.main_subnet.id
     tags = {
       Name = "zabbix-server"
@@ -96,37 +95,31 @@ resource "aws_security_group" "database_sg" {
   name = "security_group_zabbix_database"
   description = "Security group for zabbix database"
   vpc_id = aws_vpc.main.id
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic ingress {
+    for_each = var.zabbix_db_ingress_rules
+    content {
+      description = ingress.value.description
+      from_port = ingress.value.port
+      to_port = ingress.value.port
+      protocol = ingress.value.protocol
+      cidr_blocks =ingress.value.cidr_block 
+    }
   }
-  ingress {
-    from_port = var.database_port
-    to_port   = var.database_port
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-     description = "allow SSH"
-     from_port  = "22"
-     to_port    = "22"
-     protocol   = "tcp"
-     cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic egress {
+    for_each = var.zabbix_db_engress_rules
+    content {
+      from_port = egress.value.port
+      to_port = egress.value.port
+      protocol = egress.value.protocol
+      cidr_blocks = egress.value.cidr_block 
+    }
   }
 }
 
 resource "aws_instance" "database_instance" {
     instance_type     = var.instance_types["database"]
     ami               = var.instance_amis["database"]
-    key_name = var.key
+    key_name = aws_key_pair.zabbix_key.id
     vpc_security_group_ids = [aws_security_group.database_sg.id]
     subnet_id = aws_subnet.main_subnet.id
     tags = {
@@ -138,38 +131,32 @@ resource "aws_security_group" "frontend_sg" {
   name = "security_group_zabbix_frontend"
   description = "Security group for zabbix frontend"
   vpc_id = aws_vpc.main.id
-  ingress {
-    from_port = -1
-    to_port   = -1
-    protocol = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic ingress {
+    for_each = var.zabbix_frontend_ingress_rules
+    content {
+      description = ingress.value.description
+      from_port = ingress.value.port
+      to_port = ingress.value.port
+      protocol = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_block 
+    }
   }
-  ingress {
-    from_port = var.frontend_port
-    to_port   = var.frontend_port
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "allow SSH"
-    from_port  = "22"
-    to_port    = "22"
-    protocol   = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic egress {
+    for_each = var.zabbix_server_engress_rules
+    content {
+      from_port = egress.value.port
+      to_port = egress.value.port
+      protocol = egress.value.protocol
+      cidr_blocks = egress.value.cidr_block 
+    }
   }
 }
 
 resource "aws_instance" "frontend_instance" {
     instance_type     = var.instance_types["frontend"]
     ami               = var.instance_amis["frontend"]
-    key_name = var.key
-    vpc_security_group_ids = [aws_security_group.database_sg.id]
+    key_name = aws_key_pair.zabbix_key.id
+    vpc_security_group_ids = [aws_security_group.frontend_sg.id]
     subnet_id = aws_subnet.main_subnet.id
     tags = {
       Name = "zabbix-frontend"
