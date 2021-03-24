@@ -1,7 +1,10 @@
 name: Hello World
 on:
     push:
-        paths: [ test ]
+        branches: 
+        - gitactions
+        paths:
+        - test/**
     workflow_dispatch:
 jobs:
     printmessage:
