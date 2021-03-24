@@ -10,12 +10,12 @@ jobs:
         steps:
         - uses: actions/checkout@v2
           with:
-            ref: packertemplate
+            ref: gitactions
         - name: print hello world message
           run: echo Hello, world!!!
         - name: print current working directory
           run: pwd
-        - name: cd to packer
-          run: cd packer
-        - name: list cwd and parent
-          run: pwd; ls -l; ls -l ../
+        - name: cd to test
+          run: cd test
+        - name: list cwd, parent and test
+          run: pwd; ls -l; ls -l ../; ls -l test
