@@ -32,6 +32,7 @@ variable "instance_types" {
     "server" = "t2.micro",
     "database" = "t2.micro",
     "frontend" = "t2.micro"
+    "proxy" = "t2.micro"
   }
 }
 
@@ -41,6 +42,7 @@ variable "instance_amis" {
     "server" = "ami-0767046d1677be5a0",
     "database" = "ami-0767046d1677be5a0",
     "frontend" = "ami-0767046d1677be5a0"
+    "proxy" = "ami-0767046d1677be5a0"
   }
 }
 

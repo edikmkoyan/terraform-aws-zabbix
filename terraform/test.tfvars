@@ -7,10 +7,12 @@ main_subnet = "10.0.1.0/24"
 key_path = "/home/karen/.ssh/id_rsa.pub"
 instance_types = {"server" = "t2.micro",
                   "database" = "t2.micro",
-                  "frontend" = "t2.micro"}
+                  "frontend" = "t2.micro",
+                  "proxy" = "t2.micro"}
 instance_amis = {"server" = "ami-0767046d1677be5a0",
                  "database" = "ami-0767046d1677be5a0",
-                 "frontend" = "ami-0767046d1677be5a0"}
+                 "frontend" = "ami-0767046d1677be5a0",
+                 "proxy" = "ami-0767046d1677be5a0"}
 zabbix_server_ingress_rules = [
                 {
                   "description" = "Allow SSH"
