@@ -23,16 +23,42 @@ source "amazon-ebs" "aws_zabbix" {
 
 source "virtualbox-iso" "vb_zabbix" {
   guest_os_type = "Ubuntu_64"
-  iso_url = "http://releases.ubuntu.com/12.04/ubuntu-12.04.5-server-amd64.iso"
-  iso_checksum = "md5:769474248a3897f4865817446f9a4a53"
+  iso_url = "http://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/ubuntu-20.04.1-legacy-server-amd64.iso"
+  iso_checksum = "sha256:f11bda2f2caed8f420802b59f382c25160b114ccc665dbac9c5046e7fceaced2"
   cpus             = "1"
   memory           = "2048"
   disk_size        = "10240"
   ssh_username = "ubuntu"
-  ssh_timeout = "2m"
-#  ssh_password = "packer"
+  ssh_timeout = "20m"
+  ssh_password = "ubuntu"
   pause_before_connecting = "3m"
-  headless = true
+  headless = false
+  http_directory = "/"
+  boot_command = [
+        "<esc><wait>",
+        "<esc><wait>",
+        "<enter><wait>",
+        "/install/vmlinuz",
+        " auto=true",
+        " url=https://raw.githubusercontent.com/geerlingguy/packer-boxes/b82c32943bb264d465397bd229842f8291564e30/ubuntu2004/http/preseed.cfg",
+        " locale=en_US<wait>",
+        " console-setup/ask_detect=false<wait>",
+        " console-setup/layoutcode=us<wait>",
+        " console-setup/modelcode=pc105<wait>",
+        " debconf/frontend=noninteractive<wait>",
+        " debian-installer=en_US<wait>",
+        " fb=false<wait>",
+        " initrd=/install/initrd.gz<wait>",
+        " kbd-chooser/method=us<wait>",
+        " keyboard-configuration/layout=USA<wait>",
+        " keyboard-configuration/variant=USA<wait>",
+        " netcfg/get_domain=vm<wait>",
+        " netcfg/get_hostname=vagrant<wait>",
+        " grub-installer/bootdev=/dev/sda<wait>",
+        " noapic<wait>",
+        " -- <wait>",
+        "<enter><wait>"
+      ]
   shutdown_command = "echo 'packer' | sudo -S shutdown -P now"
 }
 
