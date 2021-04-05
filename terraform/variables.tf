@@ -27,7 +27,7 @@ variable "key_path" {
 }
 
 variable "instance_types" {
-  type = "map"
+  type = map
   default = {
     "server" = "t2.micro",
     "database" = "t2.micro",
@@ -64,6 +64,16 @@ variable "zabbix_server_ingress_rules" {
     "cidr_block" = ["0.0.0.0/0"]}
   ]
 }
+
+variable "zabbix_proxy_ingress_rules" {
+  default = [{
+    "description" = "Allow SSH"
+    "port" = 22
+    "protocol" = "tcp"
+    "cidr_block" = ["0.0.0.0/0"]},
+  ]
+}
+
 
 variable "zabbix_db_ingress_rules" {
   default = [{
@@ -120,6 +130,14 @@ variable "zabbix_db_engress_rules" {
 }
 
 variable "zabbix_frontend_engress_rules" {
+  default = [{
+    "port" = 0
+    "protocol" = "-1"
+    "cidr_block" = ["0.0.0.0/0"]}
+  ]
+}
+
+variable "zabbix_proxy_engress_rules" {
   default = [{
     "port" = 0
     "protocol" = "-1"
