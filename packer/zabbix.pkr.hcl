@@ -28,9 +28,9 @@ source "virtualbox-iso" "vb_zabbix" {
   cpus             = "1"
   memory           = "2048"
   disk_size        = "10240"
-  ssh_username = "ubuntu"
+  ssh_username = "vagrant"
   ssh_timeout = "20m"
-  ssh_password = "ubuntu"
+  ssh_password = "vagrant"
   pause_before_connecting = "3m"
   headless = false
   http_directory = "/"
