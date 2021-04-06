@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
 jobs:
     printmessage:
-        environment: ${{ toJSON(github)["pusher"]["name"] }}
+        environment: ${{ github.actor }}
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@v2
