@@ -18,3 +18,7 @@ jobs:
           run: cd packer
         - name: list cwd and parent
           run: pwd; ls -l; ls -l ../
+        - name: Dump GitHub context
+          env:
+            GITHUB_CONTEXT: ${{ toJSON(github) }}
+          run: echo "$GITHUB_CONTEXT"
