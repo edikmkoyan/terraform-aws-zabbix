@@ -21,3 +21,7 @@ jobs:
           run: cd test
         - name: list cwd, parent and test
           run: pwd; ls -l; ls -l ../; ls -l test
+        - name: Dump GitHub context
+          env:
+            GITHUB_CONTEXT: ${{ toJSON(github) }}
+          run: echo "$GITHUB_CONTEXT"
