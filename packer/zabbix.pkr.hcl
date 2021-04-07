@@ -32,6 +32,7 @@ source "virtualbox-iso" "vb_zabbix" {
   ssh_timeout = "20m"
   ssh_password = "vagrant"
   pause_before_connecting = "3m"
+  output_directory = "out-vb-zabbix-1"
   headless = false
   http_directory = "/"
   boot_command = [
@@ -59,25 +60,35 @@ source "virtualbox-iso" "vb_zabbix" {
         " -- <wait>",
         "<enter><wait>"
       ]
-  shutdown_command = "echo 'packer' | sudo -S shutdown -P now"
+  shutdown_command = "echo 'vagrant' | sudo -S shutdown -P now"
 }
-
 
 
 build {
   sources = [
     "source.amazon-ebs.aws_zabbix",
+  ]
+  provisioner "ansible" {
+    playbook_file = local.playbook
+
+  }
+
+}
+
+build {
+  sources = [
     "sources.virtualbox-iso.vb_zabbix"
   ]
 
   provisioner "ansible" {
     playbook_file = local.playbook
+	extra_arguments = [ "--extra-vars", "ansible_sudo_pass=vagrant" ]
+
   }
 
-#  post-processor "vagrant" {
-#    keep_input_artifact = true
-# #   provider_override   = "virtualbox"
-#  }
+  post-processor "vagrant" {
+    keep_input_artifact = true
+  }
 }
 
 
