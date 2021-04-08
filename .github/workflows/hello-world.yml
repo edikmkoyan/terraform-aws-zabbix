@@ -11,9 +11,9 @@ jobs:
         environment: serimikayelyan_environment
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v2
-          with:
-            ref: gitactions
+        #- uses: actions/checkout@v2
+        #  with:
+        #    ref: gitactions
         - name: print hello world message
           run: echo Hello, world!!!
         - name: print current working directory
