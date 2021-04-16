@@ -1,0 +1,77 @@
+# This is a basic workflow to help you get started with Actions
+
+name: create zabbix cluster with terraform
+
+on:
+  push:
+    branches:
+    - terraform
+    - development
+    paths:
+    - terraform/**
+  pull_request:
+    branches:
+    - development
+    paths:
+    - terraform/**
+
+jobs:
+  terraform_run:
+    environment: zabbix_aws
+    defaults:
+      run:
+        working-directory: terraform
+    env:
+      TF_STATES_BUCKET: terraform-states
+      TERRAGRUNT_BIN_URL: https://github.com/gruntwork-io/terragrunt/releases/download/v0.28.24/terragrunt_linux_amd64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: credentials
+        id: credentials
+        env:
+          SECRETS: ${{ toJSON(secrets) }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          sudo apt-get install jq -y
+          SSH_PRIVATE_KEY=$(echo $SECRETS | jq --arg privatekey "${ACTOR^^}_SECRET" '.[$privatekey]')
+          AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_SECRET" '.[$accesskey]')
+          AWS_SECRET_KEY=$(echo $SECRETS | jq --arg secretkey "${ACTOR^^}_SECRET" '.[$secretkey]')
+          echo "::set-output name=SSH_PRIVATE_KEY::$SSH_PRIVATE_KEY"
+          echo "::set-output name=AWS_ACCESS_KEY::$AWS_ACCESS_KEY"
+          echo "::set-output name=AWS_SECRET_KEY::$AWS_SECRET_KEY"
+      - name: create public key
+        run: |
+          cat << EOF > zabbixkey
+          ${{ steps.credentials.outputs.SSH_PRIVATE_KEY }}
+          EOF
+          chmod 400 ./zabbixkey
+          ssh-keygen -f ./zabbixkey -N ""
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.credentials.outputs.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ steps.credentials.outputs.AWS_SECRET_KEY }}
+      - name: Copy terraform state file from s3 to local
+        continue-on-error: true
+        run: |
+          aws s3 cp s3://${TF_STATES_BUCKET}/terraform.tfstate ./
+      - uses: hashicorp/setup-terraform@v1
+      - name: Install terragrunt
+        run: |
+          wget $TERRAGRUNT_BIN_URL -O terragrunt
+          chmod +x terragrunt
+      - name: Terraform Init
+        run: ./terragrunt init
+      - name: Terraform plan
+        if: github.event_name == 'pull_request'
+        run: ./terragrunt plan -var key_path=./zabbixkey.pub
+      - name: Terraform apply
+        if: github.event_name == 'push'
+        run: ./terragrunt apply -auto-approve -var key_path=./zabbixkey.pub
+      - name: Upload terraform tfstate file
+        if: github.event_name == 'push'
+        run: |
+          aws s3 cp ./terraform.tfstate s3://${TF_STATES_BUCKET}/terraform.tfstate
