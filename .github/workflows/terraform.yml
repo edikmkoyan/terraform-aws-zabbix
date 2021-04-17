@@ -18,6 +18,7 @@ on:
     inputs:
       action:
         description: 'Terraform action show|plan|apply|destroy'
+        required: true
         default: 'show'
 
 jobs:
