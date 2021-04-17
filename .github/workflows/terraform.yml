@@ -52,11 +52,11 @@ jobs:
           #AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_AWS_ACCESS_KEY" '.[$accesskey]')
           #AWS_SECRET_KEY=$(echo $SECRETS | jq --arg secretkey "${ACTOR^^}_AWS_SECRET_KEY" '.[$secretkey]')
           #SSH_PRIVATE_KEY=${{ secrets[env.SSH_PRIVATE_KEY] }}
+          #sudo apt-get install jq -y
         run: |
-          sudo apt-get install jq -y
-          read -r -d '' SSH_PRIVATE_KEY << EOM
+          IFS='' read -r -d '' SSH_PRIVATE_KEY <<"EOF"
           ${{ secrets[env.SSH_PRIVATE_KEY] }}
-          EOM
+          EOF
           AWS_ACCESS_KEY=${{ secrets[env.AWS_ACCESS_KEY] }}
           AWS_SECRET_KEY=${{ secrets[env.AWS_SECRET_KEY] }}
           echo "::set-output name=SSH_PRIVATE_KEY::$SSH_PRIVATE_KEY"
