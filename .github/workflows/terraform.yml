@@ -54,8 +54,8 @@ jobs:
           ${{ secrets[env.SSH_PRIVATE_KEY] }}
           EOF
           chmod 400 ./zabbixkey
-          cat ./zabbixkey
           ssh-keygen -y -f ./zabbixkey -N "" > zabbixkey.pub
+          cat ./zabbixkey.pub
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         env:
@@ -64,6 +64,7 @@ jobs:
         with:
           aws-access-key-id: ${{ steps.credentials.outputs.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ steps.credentials.outputs.AWS_SECRET_KEY }}
+          aws-region: us-east-2
       - name: Copy terraform state file from s3 to local
         continue-on-error: true
         run: |
