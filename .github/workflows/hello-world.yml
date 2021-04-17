@@ -1,0 +1,37 @@
+name: Hello World
+on:
+    push:
+        branches: 
+        - gitactions
+        paths:
+        - test/**
+    workflow_dispatch:
+jobs:
+    printmessage:
+        environment: serimikayelyan_environment
+        runs-on: ubuntu-latest
+        steps:
+        - name: Dump actor
+          env:
+            ACTOR: ${{ github.actor }}
+          run: echo "$ACTOR"
+        - name: Dump secrets context
+          env:
+            SECRETS_CONTEXT: ${{ toJSON(secrets) }}
+          run: echo "$SECRETS_CONTEXT"
+        - name: Dump GitHub context
+          env:
+            GITHUB_CONTEXT: ${{ toJSON(github) }}
+          run: echo "$GITHUB_CONTEXT"
+
+        #- uses: actions/checkout@v2
+        #  with:
+        #    ref: gitactions
+        - name: print hello world message
+          run: echo Hello, world!!!
+        - name: print current working directory
+          run: pwd
+        #- name: cd to test
+        #  run: cd test
+        #- name: list cwd, parent and test
+        #  run: pwd; ls -l; ls -l ../; ls -l test
