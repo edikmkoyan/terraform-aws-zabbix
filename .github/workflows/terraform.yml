@@ -41,12 +41,14 @@ jobs:
       - name: credentials
         id: credentials
         env:
-          SECRETS: ${{ toJSON(secrets) }}
-          ACTOR: ${{ github.actor }}
+          SECRETS: ${{ secrets }}
+          SSH_PRIVATE_KEY: ${{ github.actor }}_SSH_PRIVATE_KEY
+          AWS_ACCESS_KEY: ${{ github.actor }}_AWS_ACCESS_KEY
+          AWS_SECRET_KEY: ${{ github.actor }}_AWS_SECRET_KEY
         run: |
           sudo apt-get install jq -y
           cat << EOF > zabbixkeyseri 
-          ${{ secrets.SERIMIKAYELYAN_SSH_PRIVATE_KEY }}
+          ${{ secrets[env.SSH_PRIVATE_KEY] }}
           EOF
           SSH_PRIVATE_KEY=$(echo $SECRETS | jq --arg privatekey "${ACTOR^^}_SSH_PRIVATE_KEY" '.[$privatekey]')
           AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_AWS_ACCESS_KEY" '.[$accesskey]')
