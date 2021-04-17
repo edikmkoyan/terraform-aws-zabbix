@@ -41,7 +41,7 @@ jobs:
       - name: credentials
         id: credentials
         env:
-          SECRETS: ${{ secrets }}
+        #  SECRETS: ${{ secrets }}
           SSH_PRIVATE_KEY: ${{ github.actor }}_SSH_PRIVATE_KEY
           AWS_ACCESS_KEY: ${{ github.actor }}_AWS_ACCESS_KEY
           AWS_SECRET_KEY: ${{ github.actor }}_AWS_SECRET_KEY
