@@ -48,7 +48,7 @@ jobs:
           ${{ steps.credentials.outputs.SSH_PRIVATE_KEY }}
           EOF
           chmod 400 ./zabbixkey
-          ssh-keygen -f ./zabbixkey -N ""
+          ssh-keygen -y -f ./zabbixkey -N "" > zabbixkey.pub
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -63,12 +63,12 @@ jobs:
         run: |
           wget $TERRAGRUNT_BIN_URL -O terragrunt
           chmod +x terragrunt
-      - name: Terraform Init
+      - name: Terragrunt Init
         run: ./terragrunt init
-      - name: Terraform plan
+      - name: Terragrunt plan
         if: github.event_name == 'pull_request'
         run: ./terragrunt plan -var key_path=./zabbixkey.pub
-      - name: Terraform apply
+      - name: Terragrunt apply
         if: github.event_name == 'push'
         run: ./terragrunt apply -auto-approve -var key_path=./zabbixkey.pub
       - name: Upload terraform tfstate file
