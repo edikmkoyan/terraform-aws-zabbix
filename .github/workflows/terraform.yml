@@ -18,6 +18,7 @@ on:
     inputs:
       action:
         description: 'Terraform action show|plan|apply|destroy'
+        required: true
         default: 'show'
 
 jobs:
@@ -38,32 +39,33 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - name: credentials
-        id: credentials
-        env:
-          SECRETS: ${{ toJSON(secrets) }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          sudo apt-get install jq -y
-          SSH_PRIVATE_KEY=$(echo $SECRETS | jq --arg privatekey "${ACTOR^^}_SSH_PRIVATE_KEY" '.[$privatekey]')
-          AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_AWS_ACCESS_KEY" '.[$accesskey]')
-          AWS_SECRET_KEY=$(echo $SECRETS | jq --arg secretkey "${ACTOR^^}_AWS_SECRET_KEY" '.[$secretkey]')
-          echo "::set-output name=SSH_PRIVATE_KEY::$SSH_PRIVATE_KEY"
-          echo "::set-output name=AWS_ACCESS_KEY::$AWS_ACCESS_KEY"
-          echo "::set-output name=AWS_SECRET_KEY::$AWS_SECRET_KEY"
+          #cat << EOF > zabbixkeyseri 
+          #${{ secrets[env.SSH_PRIVATE_KEY] }}
+          #EOF
+          #SSH_PRIVATE_KEY=$(echo $SECRETS | jq --arg privatekey "${ACTOR^^}_SSH_PRIVATE_KEY" '.[$privatekey]')
+          #AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_AWS_ACCESS_KEY" '.[$accesskey]')
+          #AWS_SECRET_KEY=$(echo $SECRETS | jq --arg secretkey "${ACTOR^^}_AWS_SECRET_KEY" '.[$secretkey]')
+          #SSH_PRIVATE_KEY=${{ secrets[env.SSH_PRIVATE_KEY] }}
+          #sudo apt-get install jq -y
       - name: create public key
+        env:
+          SSH_PRIVATE_KEY: ${{ github.actor }}_SSH_PRIVATE_KEY
         run: |
           cat << EOF > zabbixkey
-          ${{ steps.credentials.outputs.SSH_PRIVATE_KEY }}
+          ${{ secrets[env.SSH_PRIVATE_KEY] }}
           EOF
           chmod 400 ./zabbixkey
-          cat ./zabbixkey
           ssh-keygen -y -f ./zabbixkey -N "" > zabbixkey.pub
+          cat ./zabbixkey.pub
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
+        env:
+          AWS_ACCESS_KEY: ${{ github.actor }}_AWS_ACCESS_KEY
+          AWS_SECRET_KEY: ${{ github.actor }}_AWS_SECRET_KEY
         with:
-          aws-access-key-id: ${{ steps.credentials.outputs.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ steps.credentials.outputs.AWS_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets[env.AWS_ACCESS_KEY] }}
+          aws-secret-access-key: ${{ secrets[env.AWS_SECRET_KEY] }}
+          aws-region: us-east-2
       - name: Copy terraform state file from s3 to local
         continue-on-error: true
         run: |
