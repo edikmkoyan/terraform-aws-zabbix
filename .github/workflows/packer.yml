@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: create zabbix aws images with packer
+
+on:
+  push:
+    branches:
+    - packertemplate
+    - development
+    paths:
+    - packer/**
+  pull_request:
+    branches:
+    - packertemplate
+    - development
+    paths:
+    - packer/**
+  workflow_dispatch:
+
+jobs:
+  terraform_run:
+    environment: zabbix_aws
+    defaults:
+      run:
+        working-directory: packer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        env:
+          AWS_ACCESS_KEY: ${{ github.actor }}_AWS_ACCESS_KEY
+          AWS_SECRET_KEY: ${{ github.actor }}_AWS_SECRET_KEY
+        with:
+          aws-access-key-id: ${{ secrets[env.AWS_ACCESS_KEY] }}
+          aws-secret-access-key: ${{ secrets[env.AWS_SECRET_KEY] }}
+          aws-region: us-east-2
+      - name: packer build
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+

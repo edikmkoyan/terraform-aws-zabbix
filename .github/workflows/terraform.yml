@@ -39,14 +39,6 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
-          #cat << EOF > zabbixkeyseri 
-          #${{ secrets[env.SSH_PRIVATE_KEY] }}
-          #EOF
-          #SSH_PRIVATE_KEY=$(echo $SECRETS | jq --arg privatekey "${ACTOR^^}_SSH_PRIVATE_KEY" '.[$privatekey]')
-          #AWS_ACCESS_KEY=$(echo $SECRETS | jq --arg accesskey "${ACTOR^^}_AWS_ACCESS_KEY" '.[$accesskey]')
-          #AWS_SECRET_KEY=$(echo $SECRETS | jq --arg secretkey "${ACTOR^^}_AWS_SECRET_KEY" '.[$secretkey]')
-          #SSH_PRIVATE_KEY=${{ secrets[env.SSH_PRIVATE_KEY] }}
-          #sudo apt-get install jq -y
       - name: create public key
         env:
           SSH_PRIVATE_KEY: ${{ github.actor }}_SSH_PRIVATE_KEY
