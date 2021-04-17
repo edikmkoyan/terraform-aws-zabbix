@@ -54,7 +54,7 @@ jobs:
           ${{ secrets[env.SSH_PRIVATE_KEY] }}
           EOF
           chmod 400 ./zabbixkey
-          cat /zabbixkey
+          cat ./zabbixkey
           ssh-keygen -y -f ./zabbixkey -N "" > zabbixkey.pub
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
