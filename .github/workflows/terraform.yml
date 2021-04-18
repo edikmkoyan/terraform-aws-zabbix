@@ -69,16 +69,11 @@ jobs:
           chmod +x terragrunt
       - name: Terragrunt Init
         run: ./terragrunt init
-      - name: Terragrunt show
+      - name: Terragrunt show/destroy
         if: |
           github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.action == 'show'
-        run: ./terragrunt show -var key_path=./zabbixkey.pub
-      - name: Terragrunt destroy
-        if: |
-          github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.action == 'destroy'
-        run: ./terragrunt destroy
+          github.event.inputs.action == 'show' || github.event.inputs.action == 'destroy'
+        run: ./terragrunt ${{ github.event.inputs.action }}
       - name: Terragrunt plan
         if: |
           github.event_name == 'pull_request' ||
@@ -88,10 +83,13 @@ jobs:
         if: |
           github.event_name == 'push' ||
           github.event.inputs.action == 'apply'
-        run: ./terragrunt apply -auto-approve -var key_path=./zabbixkey.pub
-      - name: Upload terraform tfstate file
-        if: |
-          github.event_name == 'push' ||
-          github.event.inputs.action == 'apply'
         run: |
+          ./terragrunt apply -auto-approve -var key_path=./zabbixkey.pub
           aws s3 cp ./terraform.tfstate s3://${TF_STATES_BUCKET}/terraform.tfstate
+
+          #      - name: Upload terraform tfstate file
+          #        if: |
+          #          github.event_name == 'push' ||
+          #          github.event.inputs.action == 'apply'
+          #        run: |
+          #          aws s3 cp ./terraform.tfstate s3://${TF_STATES_BUCKET}/terraform.tfstate
