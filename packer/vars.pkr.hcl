@@ -40,3 +40,7 @@ variable "credential_profile" {
   default = "narek"
 }
 
+variable "vagrant_pass" {
+  type    = string
+  default = "vagrant"
+}
