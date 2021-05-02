@@ -25,14 +25,14 @@ source "virtualbox-iso" "vb_zabbix" {
   guest_os_type = "Ubuntu_64"
   iso_url = "http://cdimage.ubuntu.com/ubuntu-legacy-server/releases/20.04/release/ubuntu-20.04.1-legacy-server-amd64.iso"
   iso_checksum = "sha256:f11bda2f2caed8f420802b59f382c25160b114ccc665dbac9c5046e7fceaced2"
-  cpus             = "8"
-  memory           = "9048"
-  disk_size        = "10240"
-  ssh_username = "vagrant"
-  ssh_timeout = "20m"
-  ssh_password = var.vagrant_pass
-  pause_before_connecting = "3m"
-  output_directory = "out-vb-zabbix-1"
+  cpus             = var.hw_resources["cpu"]
+  memory           = var.hw_resources["mem"]
+  disk_size        = var.hw_resources["disk_size"]
+  ssh_username = var.ssh_params["username"]
+  ssh_timeout =  var.ssh_params["timeout"]
+  ssh_password = var.ssh_params["password"]
+  pause_before_connecting = var.ssh_params["pause_before_connecting"]
+  output_directory = var.output_dir 
   headless = false
   http_directory = "/"
   boot_command = [
@@ -60,7 +60,7 @@ source "virtualbox-iso" "vb_zabbix" {
         " -- <wait>",
         "<enter><wait>"
       ]
-  shutdown_command = "echo 'var.vagrant_pass' | sudo -S shutdown -P now"
+  shutdown_command = "echo ${var.ssh_params["password"]} | sudo deluser --remove-home ${var.ssh_params["username"]}; echo ${var.ssh_params["password"]} | sudo -S shutdown -P now"
 }
 
 
@@ -82,7 +82,7 @@ build {
 
   provisioner "ansible" {
     playbook_file = local.playbook
-	extra_arguments = [ "--extra-vars", "ansible_sudo_pass=var.vagrant_pass" ]
+	extra_arguments = [ "--extra-vars", "ansible_sudo_pass=${var.ssh_params["password"]}" ]
 
   }
 

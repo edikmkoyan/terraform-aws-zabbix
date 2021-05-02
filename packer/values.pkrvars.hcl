@@ -1,2 +1,2 @@
-var.region = "eu-central-1"
+var.region="eu-central-1"
 

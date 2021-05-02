@@ -40,7 +40,28 @@ variable "credential_profile" {
   default = "narek"
 }
 
-variable "vagrant_pass" {
+variable "output_dir" {
   type    = string
-  default = "vagrant"
+  default = "out-vb-zabbix"
 }
+
+variable "hw_resources" {
+  #  type = map
+  default = {
+    "cpu"  = "1"
+    "mem" = "1024"
+    "disk_size"  = "10240"
+  }
+}
+
+variable "ssh_params" {
+  #  type = map
+  default = {
+    "username"  = "vagrant"
+    "password" = "vagrant"
+    "timeout"  = "50m"
+	"pause_before_connecting" = "3m" 
+  }
+}
+
+
